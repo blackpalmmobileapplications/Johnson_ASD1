@@ -1,6 +1,6 @@
 /* Carmen Johnson
-   MiU Project 4
-   9/20/2012
+   MiU Project 2
+   9/6/2012
 */
 
 var items;
@@ -13,7 +13,8 @@ function()
 	items = JSON.parse(jsonObject);
 	
 	// Keep track of the page position
-	pageScroll = window.pageYOffset;
+	//pageScroll = window.pageYOffset;
+	pageScroll = $(window).scrollTop();
 	
 	// Make sure we don't have any empty items
 	items = jQuery.grep(items, function(n) { return n; });
@@ -25,6 +26,13 @@ function()
 	
 	// Show an item
 	$("#itemList").on("click", ".item-link", function(){viewItem($(this).attr("name"));});
+	
+	$(".delItem").click(
+		function()
+		{
+			deleteItem($(this).attr("name"));
+		}
+	);
 	
 	$(document).bind("pagechange", function(e, data) {
 		// Only worry about the 'viewItem' page
@@ -185,31 +193,34 @@ var initializeList = function initializeList() {
 			if(item == null)
 				continue;
 			
-			var link = document.createElement("a");
-			link.href = "#viewItemPage";
-			link.name = item.idno;
-			link.setAttribute("class", "item-link");
-			var listItem = document.createElement("li");
-			listItem.setAttribute("data-filtertext", item.name + " " + item.category);
-			var image = document.createElement("img");
-			image.src = "images/" + item.category + ".png";
-			var text = document.createElement("h1");
-			text.setAttribute("class", "item-text");
-			text.innerHTML = item.name;
 			
-			var delIcon = document.createElement("a");
-			delIcon.href = "javascript:deleteItem(" + item.idno + ")";
-			delIcon.name = item.idno;
-			delIcon.setAttribute("data-role", "button");
-			delIcon.setAttribute("data-icon", "delete");
+					
+			var link = $("<a></a>");
+			link.attr("href", "#viewItemPage");
+			link.attr("name" ,item.idno);
+			link.attr("class", "item-link");
+			var listItem = $("<li></li>");
+			listItem.attr("data-filtertext", item.name + " " + item.category);
+			var image = $("<img />");
+			image.attr("src", "images/" + item.category + ".png");
+			var text = $("<h1></h1>");
+			text.attr("class", "item-text");
+			text.html(item.name);
+			
+			var delIcon = $("<a></a>");
+			delIcon.attr("class", "delItem");
+			
+			delIcon.attr("name", item.idno);
+			delIcon.attr("data-role", "button");
+			delIcon.attr("data-icon", "delete");
 						
 								
-			link.appendChild(image);
-			link.appendChild(text);
-			listItem.appendChild(link);
-			listItem.appendChild(delIcon);
-					
-					
+			link.append(image);
+			link.append(text);
+			listItem.append(link);
+			listItem.append(delIcon);
+			
+			
 			$("#itemList").append(listItem);
 		}
 		$("#itemList").listview('refresh');
@@ -289,7 +300,7 @@ var viewItem = function viewItem(idno)
 	{
 	
 		// Save the scroll position
-		pageScroll = window.pageYOffset;
+		pageScroll = $(window).scrollTop();
 		
 		// Get the item they clicked on
 		var item = getData(idno);
